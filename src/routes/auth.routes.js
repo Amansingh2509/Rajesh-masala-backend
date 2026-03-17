@@ -25,16 +25,7 @@ router.get(
 );
 
 // unified logout
-router.post(
-  "/logout",
-  authmiddleware.authusermiddleware,
-  authcontroller.logoutuser,
-);
-router.post(
-  "/logout",
-  authmiddleware.authitemownerMiddleware,
-  authcontroller.logoutowner,
-);
+router.post("/logout", authcontroller.logout);
 
 // Google OAuth
 router.get("/google", authcontroller.googleAuth);

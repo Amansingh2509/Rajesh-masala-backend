@@ -5,6 +5,7 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const contactRoutes = require("./routes/contact.routes");
 
 const app = express();
 require("./db/db");
@@ -62,8 +63,11 @@ require("./strategies/google.strategy")(passport);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemroutes);
+app.use("/api/orders", require("./routes/order.routes"));
+app.use("/api/contact", require("./routes/contact.routes"));
 
 app.get("/", (req, res) => {
   res.send("hello its aman ");
 });
+app.use("/api", contactRoutes);
 module.exports = app;
