@@ -1,16 +1,31 @@
 const express = require("express");
 const router = express.Router();
+
 const orderController = require("../controllers/order.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 
-// User places order (user auth only)
+// ================= CREATE ORDER =================
 router.post(
   "/",
   authMiddleware.authusermiddleware,
   orderController.createOrder,
 );
 
-// Owner views all orders (public - single owner app)
+// ================= UPDATE ORDER STATUS (OWNER) =================
+router.put(
+  "/:id/status",
+  authMiddleware.authitemownerMiddleware,
+  orderController.updateOrderStatus,
+);
+
+// ================= GET ALL ORDERS =================
 router.get("/", orderController.getOrders);
+
+// ================= GET MY ORDERS =================
+router.get(
+  "/my",
+  authMiddleware.authusermiddleware,
+  orderController.getMyOrders,
+);
 
 module.exports = router;
