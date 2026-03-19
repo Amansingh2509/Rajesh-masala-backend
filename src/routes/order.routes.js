@@ -21,6 +21,13 @@ router.put(
 // ================= GET ALL ORDERS =================
 router.get("/", orderController.getOrders);
 
+// ================= DELETE ORDER =================
+router.delete(
+  "/:id",
+  authMiddleware.authusermiddleware,
+  orderController.deleteOrder,
+);
+
 // ================= GET MY ORDERS =================
 router.get(
   "/my",

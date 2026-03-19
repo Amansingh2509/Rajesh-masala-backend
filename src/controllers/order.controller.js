@@ -40,7 +40,7 @@ async function createOrder(req, res) {
 async function getOrders(req, res) {
   try {
     const orders = await Order.find()
-      .populate("user", "fullname email")
+      .populate("user", "fullname email address")
       .sort({ createdAt: -1 });
 
     res.json({
@@ -62,7 +62,7 @@ async function updateOrderStatus(req, res) {
     const { status } = req.body;
 
     // Allowed statuses
-    const validStatuses = ["pending", "delivered", "not-available"];
+    const validStatuses = ["pending", "accepted", "delivered", "not-available"];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -118,9 +118,28 @@ async function getMyOrders(req, res) {
 }
 
 // ================= EXPORT =================
+
+async function deleteOrder(req, res) {
+  try {
+    const { id } = req.params;
+    const order = await Order.findOneAndDelete({
+      _id: id,
+      user: req.user._id,
+      status: "pending",
+    });
+    if (!order) {
+      return res.status(404).json({ message: "Pending order not found" });
+    }
+    res.json({ success: true, message: "Order deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   createOrder,
   getOrders,
   updateOrderStatus,
   getMyOrders,
+  deleteOrder,
 };

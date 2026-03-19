@@ -65,6 +65,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/items", itemroutes);
 app.use("/api/orders", require("./routes/order.routes"));
 app.use("/api/contact", require("./routes/contact.routes"));
+app.use("/api/edit-requests", require("./routes/editRequest.routes"));
 
 app.get("/", (req, res) => {
   res.send("hello its aman ");
