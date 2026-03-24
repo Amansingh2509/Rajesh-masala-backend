@@ -3,7 +3,7 @@ const itemModel = require("../models/items.model");
 
 async function createitems(req, res) {
   try {
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, quantity } = req.body;
     let imageUrl = null;
 
     // Upload file to ImageKit if file exists
@@ -17,12 +17,14 @@ async function createitems(req, res) {
 
     const newItem = await itemModel.create({
       name,
+
       image:
         imageUrl ||
         "https://via.placeholder.com/300x200/FF6B35/FFFFFF?text=No+Image",
       category,
       price,
       description,
+      quantity: quantity || 0,
       owner: req.itemOwner._id,
     });
 
@@ -66,6 +68,9 @@ async function updateItem(req, res) {
   try {
     const { id } = req.params;
     const updateData = req.body;
+    if ("quantity" in req.body) {
+      updateData.quantity = Math.max(0, parseInt(req.body.quantity) || 0);
+    }
     if (req.file) {
       const result = await storageService.uploadFile(
         req.file.buffer.toString("base64"),

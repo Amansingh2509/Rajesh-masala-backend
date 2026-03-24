@@ -19,7 +19,11 @@ router.put(
 );
 
 // ================= GET ALL ORDERS =================
-router.get("/", orderController.getOrders);
+router.get(
+  "/",
+  authMiddleware.authitemownerMiddleware,
+  orderController.getOrders,
+);
 
 // ================= DELETE ORDER =================
 router.delete(

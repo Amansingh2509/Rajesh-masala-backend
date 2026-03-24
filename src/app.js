@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const contactRoutes = require("./routes/contact.routes");
 
 const app = express();
-require("./db/db");
+/* DB connection handled in server.js via connectDB() */
 
 const authRoutes = require("./routes/auth.routes");
 const itemroutes = require("./routes/item.routes");

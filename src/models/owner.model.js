@@ -8,7 +8,6 @@ const ownerSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     phone: {
       type: String,
@@ -28,5 +27,6 @@ const ownerSchema = new mongoose.Schema(
   },
 );
 
+ownerSchema.index({ email: 1 }, { unique: true });
 const ownerModel = mongoose.model("owner", ownerSchema);
 module.exports = ownerModel;

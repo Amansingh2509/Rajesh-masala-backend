@@ -1,4 +1,5 @@
 const Order = require("../models/order.model");
+const Item = require("../models/items.model");
 const nodemailer = require("nodemailer");
 
 // ================= CREATE ORDER =================
@@ -39,8 +40,23 @@ async function createOrder(req, res) {
 // ================= GET ALL ORDERS =================
 async function getOrders(req, res) {
   try {
-    const orders = await Order.find()
+    let query = { status: { $ne: "deleted" } }; // Optional: exclude deleted
+
+    // Owner filter
+    if (req.itemOwner) {
+      const Item = require("../models/items.model");
+      const ownerItemIds = await Item.find({
+        owner: req.itemOwner._id,
+      }).distinct("_id");
+      if (ownerItemIds.length === 0) {
+        return res.json({ success: true, orders: [] });
+      }
+      query["items.itemId"] = { $in: ownerItemIds };
+    }
+
+    const orders = await Order.find(query)
       .populate("user", "fullname email address")
+      .populate("items.itemId", "name price owner")
       .sort({ createdAt: -1 });
 
     res.json({
@@ -80,6 +96,26 @@ async function updateOrderStatus(req, res) {
       });
     }
 
+    // Decrease inventory on delivered
+    if (status === "delivered") {
+      for (const orderItem of order.items) {
+        const itemId = orderItem.itemId || orderItem._id; // Flexible ID
+        if (itemId) {
+          const updatedItem = await Item.findByIdAndUpdate(
+            itemId,
+            { $inc: { quantity: -orderItem.quantity } },
+            { new: true },
+          );
+          if (updatedItem.quantity < 0) {
+            return res.status(400).json({
+              success: false,
+              message: `Insufficient stock for ${orderItem.productName}`,
+            });
+          }
+        }
+      }
+    }
+
     order.status = status;
     await order.save();
 
@@ -117,8 +153,7 @@ async function getMyOrders(req, res) {
   }
 }
 
-// ================= EXPORT =================
-
+// ================= DELETE ORDER =================
 async function deleteOrder(req, res) {
   try {
     const { id } = req.params;
