@@ -15,12 +15,15 @@ const itemroutes = require("./routes/item.routes");
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://rajesh-masala-frontend.vercel.app",
-      /\.vercel\.app$/,
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin
+      if (!origin) return callback(null, true);
+      // Allow localhost
+      if (origin.includes("localhost")) return callback(null, true);
+      // Allow Vercel
+      if (origin.includes("vercel.app")) return callback(null, true);
+      callback(new Error("CORS Not allowed"), false);
+    },
     credentials: true,
   }),
 );
