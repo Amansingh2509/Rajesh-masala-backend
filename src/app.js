@@ -15,7 +15,12 @@ const itemroutes = require("./routes/item.routes");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://rajesh-masala-frontend.vercel.app",
+      /\.vercel\.app$/,
+    ],
     credentials: true,
   }),
 );
